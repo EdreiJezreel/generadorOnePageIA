@@ -140,7 +140,7 @@ Extrae información detallada de una empresa a partir de su URL.
   - Error interno del servidor
   - Error de formato JSON en la respuesta
 
-## 🔧 Funciones Principales
+## Funciones Principales
 
 ### `app.py`
 
@@ -159,8 +159,9 @@ Manejador de errores 404 para rutas no encontradas.
 Función principal que interactúa con la API de OpenAI para analizar la URL proporcionada y extraer información estructurada de la empresa.
 
 **Características:**
-- Utiliza GPT-4 con búsqueda web habilitada
-- Esquema JSON estricto para respuestas consistentes
+- Utiliza GPT-4.1-mini con búsqueda web habilitada
+- Esquema JSON estricto para respuestas consistentes como structured output
+- System prompt implementado
 - Análisis de múltiples dimensiones empresariales
 - Validación de datos y relaciones entre categorías
 
