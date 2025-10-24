@@ -29,7 +29,7 @@ generadorOnePageIA/
 
 1. **Clonar o descargar el proyecto**
    ```bash
-   git clone <url-del-repositorio>
+   git clone [<url-del-repositorio>](https://github.com/EdreiJezreel/generadorOnePageIA.git)
    cd proyecto
    ```
 
