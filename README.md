@@ -1,4 +1,7 @@
 # GENERADOR One Page IA API - Documentación
+ 
+> [!NOTE]
+> V1: instancia de modelo integrada a API de Flask con structured output como esquema de respuesta.
 
 ## Descripción del Proyecto
 
