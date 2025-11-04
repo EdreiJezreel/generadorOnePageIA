@@ -1,7 +1,10 @@
 # GENERADOR One Page IA API - Documentación
  
 > [!NOTE]
-> V1: instancia de modelo integrada a API de Flask con structured output como esquema de respuesta.
+> v1: instancia de modelo integrada a API de Flask con structured output como esquema de respuesta.
+
+> [!NOTE]
+> v2: instancia de modelo integrada a API de Flask con structured output como esquema de respuesta con apoyo de un modelo auxiliar en caso de demora o falla en la respuesta.
 
 ## Descripción del Proyecto
 
@@ -11,11 +14,12 @@ EL generador One Page IA API es una aplicación Flask que utiliza inteligencia a
 
 ```
 generadorOnePageIA/
-├── app.py              # Aplicación principal Flask (API)
-├── ai_model.py         # Instancia del modelo gpt-4.1-mini
-├── utils.py            # Utilidades y funciones auxiliares
-├── requirements.txt    # Dependencias del proyecto
-└── .env                # Variables de entorno
+├── app.py                     # Aplicación principal Flask (API)
+├── ai_model.py                # Instancia del modelo gpt-4.1-mini con web search activo
+├── ai_model_fallback.py       # Instancia del modelo gpt-4.1-mini auxiliar sin web search
+├── utils.py                   # Utilidades y funciones validaroas
+├── requirements.txt           # Dependencias del proyecto
+└── .env                       # Variables de entorno
 ```
 
 ## Instalación y Configuración
@@ -62,7 +66,8 @@ La aplicación estará disponible en `http://localhost:5000` puede ser modificad
 
 ## Endpoints de la API
 
-### POST `/api/infostartup`
+> [!IMPORTANT]
+> ### POST `/api/infostartup`
 
 Extrae información detallada de una empresa a partir de su URL.
 
@@ -146,6 +151,7 @@ Extrae información detallada de una empresa a partir de su URL.
 ## Funciones Principales
 
 ### `app.py`
+Aplicación de Flask para los endpoints de ejecución del modelo y de pruebas.
 
 #### `validar_url(url: str) -> bool`
 Valida el formato de una URL utilizando la librería `validators`.
@@ -157,6 +163,10 @@ Endpoint principal que procesa las solicitudes POST para extraer información de
 Manejador de errores 404 para rutas no encontradas.
 
 ### `ai_model.py`
+Corresponde a la invocación del modelo principal por medio del API de OpenAI.
+
+### `ai_model_fallback.py`
+Corresponde a la invocación del modelo auxiliar por medio del API de OpenAI.
 
 #### `get_info_startup(input_text: str)`
 Función principal que interactúa con la API de OpenAI para analizar la URL proporcionada y extraer información estructurada de la empresa.
@@ -212,7 +222,7 @@ La API devuelve información estructurada en las siguientes categorías:
 - **Modelo**: GPT-4.1-mini
 - **Temperatura**: 0.4 (para respuestas consistentes)
 - **Tokens máximos**: 11,000
-- **Búsqueda web**: Habilitada con contexto medio
+- **Búsqueda web**: Habilitada con contexto alto
 - **Ubicación**: México, Ciudad de México
 
 ## Validaciones
@@ -331,3 +341,95 @@ La API devuelve información estructurada en las siguientes categorías:
 - Validar y sanitizar todas las entradas del usuario
 - Implementar rate limiting en producción
 - Usar HTTPS en entornos de producción
+
+> [!IMPORTANT]
+> ### GET `/api/infostartup-test`
+
+Endpoint de prueba que simula la respuesta del sistema de extracción de información de startups, devolviendo datos estáticos de ejemplo con una latencia artificial.
+
+#### Propósito
+Proporcionar datos de prueba predefinidos para desarrollo, testing y demostración del formato de respuesta esperado.
+
+#### Comportamiento
+- **Simulación de latencia**: Introduce un retraso artificial de 3 segundos (`time.sleep(3)`)
+- **Datos estáticos**: Siempre devuelve la misma información de "n.technology"
+- **Solo desarrollo**: No debe usarse en entornos de producción
+
+#### Respuesta Exitosa (200)
+```json
+{
+  "active": true,
+  "alliances": ["N/D"],
+  "capturista": "",
+  "contacto": [
+    {
+      "email": "ada.palazuelos@n.technology",
+      "name": "Ada Palazuelos",
+      "notes": "Contacto principal para consultas generales y colaboraciones.",
+      "phone": "+52 55 1169 1227",
+      "position": "Directora de Operaciones",
+      "projects": "Gestión de operaciones y alianzas estratégicas."
+    }
+  ],
+  "contactocid": "Ada Palazuelos",
+  "dateinactive": "",
+  "description": "n.technology es una empresa mexicana especializada en soluciones de tecnología de la información...",
+  "facebook": "https://www.facebook.com/ntechnology",
+  "foundation": "2016",
+  "founders": [
+    {
+      "descripcion_founder": "Mauro Sipsz es el presidente y director general de n.technology...",
+      "email": "mauro.sipsz@n.technology",
+      "name_founder": "Mauro Sipsz",
+      "position": "Presidente y Director General",
+      "url_linkedin": "https://www.linkedin.com/in/mauro-sipsz"
+    }
+  ],
+  "funding": "N/D",
+  "hashtags": ["tecnologiainformacion", "inteligenciaartificial", "gestioniot"],
+  "income": "N/D",
+  "industries": ["Software", "Tecnologías de la Información"],
+  "instagram": "https://www.instagram.com/ntechnology",
+  "investors": ["N/D"],
+  "linkedin": "https://www.linkedin.com/company/n-technology",
+  "location": "Cuauhtémoc, Ciudad de México, México",
+  "logo_link": "https://n.technology/logo.png",
+  "market": [
+    "Educación",
+    "Empresarial & Profesional",
+    "Finanzas",
+    "Industrial",
+    "Medios & Entretenimiento",
+    "Retail & Comercio Electrónico",
+    "Salud",
+    "Sector Publico",
+    "Seguridad",
+    "Telecomunicaciones",
+    "Transporte & Movilidad",
+    "Turismo"
+  ],
+  "name": "n.technology",
+  "opportunities": "n.technology ofrece oportunidades significativas...",
+  "sectors": "Empresa, IT & Datos",
+  "secundaryTechnology": ["Automatización Inteligente"],
+  "size": "51 a 200 Empleados",
+  "technology": "Inteligencia Artificial",
+  "twitter": "https://twitter.com/n_technology",
+  "valuation": "N/D",
+  "video_url": "https://n.technology/video",
+  "website": "https://n.technology/",
+  "whatsapp": "+52 55 1169 1227",
+  "youtube": "https://www.youtube.com/c/ntechnology"
+}
+```
+#### Notas de Uso
+- **Exclusivo para desarrollo**: No utilizar en producción
+- **Latencia artificial**: 3 segundos de delay intencional
+- **Datos estáticos**: Misma respuesta en cada solicitud
+
+#### Casos de Uso Recomendados
+1. Pruebas de frontend y desarrollo
+2. Validación de estructuras de datos
+3. Demostraciones del sistema
+4. Testing de integración
+5. Documentación de formato de respuesta
