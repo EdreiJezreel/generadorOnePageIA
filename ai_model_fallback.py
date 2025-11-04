@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 
-def get_info_startup(input_text: str):
+def get_info_startup_fallback(input_text: str):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.responses.create(
         model="gpt-4.1-mini",
@@ -13,18 +13,14 @@ def get_info_startup(input_text: str):
                     {
                         "type": "input_text",
                         "text": (
-                            "ERES UN INVESTIGADOR DE MERCADO ENFOCADO EN LA INVESTIGACIÓN DE EMPRESAS "
-                            "QUE A PARTIR DE UNA URL DADA POR EL USUARIO PROPORCIONA INFORMACIÓN ÚTIL DISPONIBLE EN INTERNET, VERIFICABLE, "
-                            "CONFIABLE Y DE ACUERDO A LO MENCIONADO EN EL PROMPT, SIGUIENDO LAS "
-                            "INSTRUCCIONES DADAS POR MEDIO DE LA URL PROPORCIONADA POR EL USUARIO."
-                            "INDENTIFICA, INVESTIGA Y RECOLECTA LA MAYOR CANTIDAD DE INFORMACIÓN "
-                            "POSIBLE SOBRE LA EMPRESA, INCLUYENDO DATOS CORPORATIVOS, FINANCIEROS, "
-                            "DE CONTACTO, TECNOLÓGICOS Y MÁS, TODO DE ACUERDO AL ESQUEMA "
-                            "PROPORCIONADO.MANTEN TONO PROFESIONAL.ASEGÚRATE DE QUE LA INFORMACIÓN "
-                            "PROPORCIONADA SEA VERIFICABLE Y CONFIABLE." 
-                            "PUEDES NAVEGAR EN LA URL O EN INTERNET PARA OBTENER LA INFORMACIÓN REQUERIDA, PERO DA PRIPORIDAD A LA URL PROPORCIONADA."
-                            "IDENTIFICA CORRECTAMENTE EL SECTOR AL QUE PERTENECE LA EMPRESA, LA INDUSTRIA A LA QUE ATIENDE "
-                            "ASÍ COMO SU TECNOLOGÍA PRINCIPAL Y SECUNDARIAS, "
+                            "ERES UN ANALISTA DE EMPRESAS Y MERCADOTECNIA. "
+                            "DADA UNA URL, GENERA UN OBJETO JSON COMPLETO CON LA INFORMACIÓN CORPORATIVA "
+                            "DE ESA EMPRESA BASADO EN EL SCHEMA ESTABLECIDO. "
+                            "NO REALICES BÚSQUEDAS EXTERNAS. BASA LA INFORMACIÓN EN EL NOMBRE Y DOMINIO "
+                            "DE LA EMPRESA, Y EN SUPOSICIONES COHERENTES Y PLAUSIBLES. "
+                            "SI FALTAN DATOS, COMPLETA CON 'N/D'. "
+                            "LA ESTRUCTURA Y CAMPOS DEBEN SEGUIR EXACTAMENTE EL SCHEMA DEFINIDO A CONTINUACIÓN. "
+                            "EL JSON DEBE SER VÁLIDO Y ESTRICTAMENTE CUMPLIR EL FORMATO."
                         )
                     }
                 ]
@@ -62,7 +58,7 @@ def get_info_startup(input_text: str):
                         "description": {
                             "type": "string",
                             "minLength": 120,
-                            "description": "Descripción detallada de la empresa a modo de resumen ejecutivo, debe tener al menos 120 palabras y máximo 200 describiendo su negocio, misión y valores"
+                            "description": "Descripción detallada de la empresa a modo de resumen ejecutivo, debe tener al menos 120 palabras describiendo su negocio, misión y valores"
                         },
                         "hashtags": {
                             "type": "array",
@@ -463,29 +459,16 @@ def get_info_startup(input_text: str):
                 }
             }
         },
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search",
-                "filters": None,
-                "search_context_size": "high",
-                "user_location": {
-                    "type": "approximate",
-                    "city": None,
-                    "country": "MX",
-                    "region": "ciudad de mexico",
-                    "timezone": None
-                }
-            }
-        ],
-        temperature=0.1,
-        max_output_tokens=12000,
+        temperature=0.2,
+        max_output_tokens=4000,
         top_p=0.9,
-        store=True,
-        include=["web_search_call.action.sources"]
+        store=False
     )
     try:
         json_output = json.loads(response.output_text)
     except Exception:
-        json_output = {"error": "No se pudo convertir la respuesta a JSON válido", "raw_response": response.output_text}
+        json_output = {
+            "error": "No se pudo convertir la respuesta a JSON válido en fallback.",
+            "raw_response": response.output_text
+        }
     return response.output_text
